@@ -1,3 +1,4 @@
+from src.analyzer import analyze
 from src.parser import read_pdf, read_docx, read_txt
 import streamlit as st
 from pathlib import Path
@@ -47,3 +48,13 @@ if uploaded_file is not None:
         text,
         height=350
     )
+
+    result = analyze(text)
+
+    st.subheader("분석 결과")
+
+    for item, ok in result.items():
+        if ok:
+            st.success(f"{item} : 확인")
+        else:
+            st.error(f"{item} : 없음")
