@@ -1,3 +1,4 @@
+from src.ai_analyzer import analyze_with_ai
 from src.analyzer import analyze
 from src.parser import read_pdf, read_docx, read_txt
 import streamlit as st
@@ -35,6 +36,8 @@ if uploaded_file is not None:
 
     elif suffix == ".txt":
         text = read_txt(uploaded_file)
+        st.write("=== 디버그 ===")
+        st.code(repr(text[:100]))
 
     else:
         text = "지원하지 않는 파일 형식입니다."
@@ -51,10 +54,33 @@ if uploaded_file is not None:
 
     result = analyze(text)
 
+    total = len(result)
+    passed = sum(result.values())
+    score = int((passed / total) * 100)
+
     st.subheader("분석 결과")
+
+
 
     for item, ok in result.items():
         if ok:
             st.success(f"{item} : 확인")
         else:
             st.error(f"{item} : 없음")
+
+    
+    st.divider()
+
+    st.metric(
+    label="개인정보처리방침 기본 점수",
+    value=f"{score}점"
+    )
+
+    st.divider()
+
+    st.subheader("🤖 AI 분석")
+
+    with st.spinner("AI가 개인정보처리방침을 분석하는 중입니다..."):
+        ai_result = analyze_with_ai(text)
+
+    st.markdown(ai_result)
