@@ -80,7 +80,17 @@ if uploaded_file is not None:
 
     st.subheader("🤖 AI 분석")
 
-    with st.spinner("AI가 개인정보처리방침을 분석하는 중입니다..."):
-        ai_result = analyze_with_ai(text)
+    if "ai_result" not in st.session_state:
+        with st.spinner("AI가 개인정보처리방침을 분석하는 중입니다..."):
+            st.session_state.ai_result = analyze_with_ai(text)
+
+    ai_result = st.session_state.ai_result
 
     st.markdown(ai_result)
+
+    st.download_button(
+        label="📥 AI 분석 결과 저장",
+        data=ai_result,
+        file_name="privacy_analysis.md",
+        mime="text/markdown",
+    )
