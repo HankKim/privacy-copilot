@@ -25,7 +25,12 @@ if uploaded_file is not None:
     st.write(f"파일명 : {uploaded_file.name}")
     st.write(f"파일형식 : {Path(uploaded_file.name).suffix}")
     st.write(f"크기 : {uploaded_file.size:,} bytes")
-    
+
+       # ===== 새 문서 업로드 시 AI 결과 초기화 =====
+    if st.session_state.get("last_file") != uploaded_file.name:
+        st.session_state.last_file = uploaded_file.name
+        st.session_state.pop("ai_result", None)
+ 
     suffix = Path(uploaded_file.name).suffix.lower()
 
     if suffix == ".pdf":
@@ -78,19 +83,25 @@ if uploaded_file is not None:
 
     st.divider()
 
+# ==========================
+# AI 분석
+# ==========================
     st.subheader("🤖 AI 분석")
 
-    if "ai_result" not in st.session_state:
+    if st.button("🤖 AI 분석 실행"):
         with st.spinner("AI가 개인정보처리방침을 분석하는 중입니다..."):
             st.session_state.ai_result = analyze_with_ai(text)
 
-    ai_result = st.session_state.ai_result
+# AI 분석 결과가 있으면 출력
+    if "ai_result" in st.session_state:
 
-    st.markdown(ai_result)
+        ai_result = st.session_state.ai_result
 
-    st.download_button(
-        label="📥 AI 분석 결과 저장",
-        data=ai_result,
-        file_name="privacy_analysis.md",
-        mime="text/markdown",
-    )
+        st.markdown(ai_result)
+
+        st.download_button(
+            label="📥 AI 분석 결과 저장",
+            data=ai_result,
+            file_name="privacy_analysis.md",
+            mime="text/markdown",
+       )
